@@ -8,18 +8,53 @@
 # - download is for downloading files uploaded in the db (does streaming)
 # -------------------------------------------------------------------------
 
-
+@auth.requires_login()
 def index():
-    """
-    example action using the internationalization operator T and flash
-    rendered by views/default/index.html or views/generic.html
+    response.flash = T("Bem indo a biblioteca")
+    return locals()
 
-    if you need a simple wiki simply replace the two lines below with:
-    return auth.wiki()
-    """
-    response.flash = T("Hello World")
-    return dict(message=T('Welcome to web2py!'))
 
+@auth.requires_membership('admin')
+def cadastrar_livro():
+    response.flash = T("Cadastrar Livros")
+    form = crud.create(db.livros)
+
+    return locals()
+
+#    form = SQLFORM(db.livros)
+#
+#    if form.process().accepted:
+#        response.flash = 'Livro cadastrado'
+#    elif form.errors:
+#        response.flash = 'Houve um erro:'+str(form.errors)
+#    else:
+#        response.flash = 'Deu merda'
+#
+#    return locals()
+
+@auth.requires_membership('admin')
+def alterar_livro():
+    response.flash = T("Alterar Livro")
+
+    id_livro = request.args(0)
+
+    form = crud.update(db.livros, id_livro)
+#    form = SQLFORM(db.livros, record=id_livro,
+#        deletable=True)
+
+#    if form.process().accepted:
+#        response.flash = 'Livro cadastrado'
+#    elif form.errors:
+#        response.flash = 'Houve um erro:'+str(form.errors)
+#    else:
+#        response.flash = 'Deu merda'
+
+    return locals()
+
+def listar_livros():
+#    livros = db(db.livros.id > 0).select()
+    livros = SQLFORM.grid(db.livros)
+    return locals()
 
 def user():
     """
